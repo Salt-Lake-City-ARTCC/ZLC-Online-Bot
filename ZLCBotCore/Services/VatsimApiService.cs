@@ -72,7 +72,7 @@ namespace ZLCBotCore.Services
                     _controllerLists.ZLCOnlineControllers = online;
                 }
 
-                await UpdateDiscordMessage(_discord.GetChannel(925988386358042644) as IMessageChannel); // ZLC Channel.
+                await UpdateDiscordMessage(_discord.GetChannel(Convert.ToUInt64(_config.GetRequiredSection("discordChannel").Value)) as IMessageChannel); // ZLC Channel.
 
                 Thread.Sleep(int.Parse(_config.GetSection("serviceCheckLimit").Value));
             }
