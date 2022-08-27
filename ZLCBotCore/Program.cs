@@ -1,2 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using ZLCBotCore;
+
+try
+{
+	new ZLCBot().StartAsync().GetAwaiter().GetResult();
+}
+catch (Exception ex)
+{
+	Console.WriteLine(ex.Message);
+}
