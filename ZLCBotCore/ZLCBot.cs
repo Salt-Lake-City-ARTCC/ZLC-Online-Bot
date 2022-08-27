@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Serilog;
+using ZLCBotCore.Data;
+using ZLCBotCore.Services;
 
 namespace ZLCBotCore
 {
