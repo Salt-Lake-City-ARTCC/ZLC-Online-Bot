@@ -25,6 +25,7 @@ using ZLCBotCore;
 
 try
 {
+	Console.WriteLine("ZLC - Online - Bot  Copyright(C) 2022  Nikolas Boling(Nikolai558)\n\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions.");
 	new ZLCBot().StartAsync().GetAwaiter().GetResult();
 }
 catch (Exception ex)
