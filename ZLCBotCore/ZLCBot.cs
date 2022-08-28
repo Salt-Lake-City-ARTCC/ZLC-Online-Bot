@@ -28,6 +28,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using ZLCBotCore.Data;
 using ZLCBotCore.Services;
@@ -81,6 +82,7 @@ namespace ZLCBotCore
 
             // Instantiate the Logger
             serviceProvider.GetRequiredService<LoggingService>();
+            serviceProvider.GetRequiredService<ILogger<ZLCBot>>().LogInformation("LICENSE: ZLC - Online - Bot  Copyright(C) 2022  Nikolas Boling(Nikolai558)\n\nLICENSE: This program comes with ABSOLUTELY NO WARRANTY.\nLICENSE: This is free software, and you are welcome to redistribute it\nLICENSE: under certain conditions.");
 
             // Start the bot
             await serviceProvider.GetRequiredService<StartupService>().StartAsync();
