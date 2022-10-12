@@ -1,4 +1,4 @@
-﻿/*    
+/*    
  *    ZLC - Online - Bot, a Discord Bot for automated messages to a Discord channel stating who is online and 
  *    controlling on the VATSIM network.
  *    Copyright (C) 2022 Nikolas Boling(Nikolai558)
@@ -58,6 +58,7 @@ namespace ZLCBotCore.Services
         private readonly DiscordSocketClient _discord;
         private readonly ILogger _logger;
         private readonly ControllerLists _controllerLists;
+        private List<string> _error_msgs;
 
         //public List<VatsimController> ZLCOnlineControllers { get; protected set; }
 
@@ -69,6 +70,7 @@ namespace ZLCBotCore.Services
             _controllerLists = services.GetRequiredService<ControllerLists>();
             _discord = services.GetRequiredService<DiscordSocketClient>();
 
+            _error_msgs = new List<string>();
             //_channel = _discord.GetChannel(964591927028752446); // Kyle Server 964591927028752446
             //_channel = _discord.GetChannel(925988386358042644); // ZLC Server 
 
@@ -96,7 +98,7 @@ namespace ZLCBotCore.Services
                 }
 
                 await UpdateDiscordMessage(_discord.GetChannel(Convert.ToUInt64(_config.GetRequiredSection("discordChannel").Value)) as IMessageChannel); // ZLC Channel.
-
+                _error_msgs = new List<string>();
                 Thread.Sleep(int.Parse(_config.GetSection("serviceCheckLimit").Value));
             }
         }
@@ -135,6 +137,7 @@ namespace ZLCBotCore.Services
             if (AllVatsimInfo is null)
             {
                 _logger.LogError("Json: Could not Deserialize Vatsim Json. Is the website down?");
+                _error_msgs.Add("Unable to communicate with VATSIM API.");
                 return null;
             }
 
@@ -184,6 +187,7 @@ namespace ZLCBotCore.Services
                         catch (Exception e)
                         {
                             _logger.LogError($"Name: Could not change Controller Name [{controller.name}]: {e.Message}");
+                            _error_msgs.Add("Unable to change controller name(s).");
                             if (string.IsNullOrWhiteSpace(old_name))
                             {
                                 controller.name = "UNKNOWN NAME";
@@ -214,6 +218,7 @@ namespace ZLCBotCore.Services
             if (ControllerInformation is null)
             {
                 _logger.LogError("Json: Could not Deserialize Vatusa Json. Is the website down?");
+                _error_msgs.Add("Unable to communicate with VATUSA API.");
                 return null;
             }
 
@@ -237,6 +242,7 @@ namespace ZLCBotCore.Services
                 catch (Exception ex)
                 {
                     _logger.LogError($"Function: VatsimApiService.ReadJsonFromWebsite() Called **args[{url}] - {ex.Message}");
+                    _error_msgs.Add("Unable to communicate with VATSIM/VATUSA API.");
                     return null;
                 }
                 
@@ -375,7 +381,16 @@ namespace ZLCBotCore.Services
 
             embed.Title = $"{_controllerLists.CurrentPostedControllers.Count}  -  ATC ONLINE";
             embed.Color = new Discord.Color(0, 38, 0);
-            embed.Footer = new EmbedFooterBuilder { Text = $"Updated: {time}z" };
+
+            if (_error_msgs.Count >= 1)
+            {
+                string formated_error_msgs = string.Join("\n", _error_msgs) + "\n\n" + $"Updated: {time}z";
+                embed.Footer = new EmbedFooterBuilder { Text =  formated_error_msgs};
+            }
+            else
+            {
+                embed.Footer = new EmbedFooterBuilder { Text = $"Updated: {time}z" };
+            }
 
             if (_controllerLists.CurrentPostedControllers.Count() <= 0)
             {
