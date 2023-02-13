@@ -119,7 +119,7 @@ namespace ZLCBotCore.Services
 
             if (userModel == null) return false;
 
-            if (new string[] { "", "OBS" }.Contains(userModel.data?.rating_short))
+            if (new string[] { "OBS" }.Contains(userModel.data?.rating_short))
             {
                 return true;
             }
