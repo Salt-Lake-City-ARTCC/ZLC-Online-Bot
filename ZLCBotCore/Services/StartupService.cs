@@ -22,6 +22,7 @@
  *    under certain conditions. 
 */
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +42,7 @@ namespace ZLCBotCore.Services
         private readonly IConfiguration _config;
         private readonly IServiceProvider _services;
         private readonly ILogger _logger;
+        private readonly InteractionService _interactionService;
 
         public StartupService(IServiceProvider services)
         {
@@ -48,11 +50,26 @@ namespace ZLCBotCore.Services
             _config = _services.GetRequiredService<IConfiguration>();
             _discord = _services.GetRequiredService<DiscordSocketClient>();
             _commands = _services.GetRequiredService<CommandService>();
+            _interactionService = _services.GetRequiredService<InteractionService>();
             _logger = _services.GetRequiredService<ILogger<StartupService>>();
 
             _discord.Ready += _services.GetRequiredService<VatsimApiService>().Start;
+            _discord.Ready += DiscordReady;
 
-            _logger.LogInformation("Loaded: LoggingService");
+            _logger.LogDebug("Loaded: StartupService");
+        }
+
+        private async Task DiscordReady()
+        {
+            List<SocketGuild>? currentGuilds = _discord.Guilds.ToList();
+
+            // await _interactionService.RegisterCommandsGloballyAsync();
+            // For development only! For production use await _interactionService.RegisterCommandsGloballyAsync(); instead of foreach loop.
+            foreach (var guild in currentGuilds)
+            {
+                // Register any slash commands to the individual discord server
+                await _interactionService.RegisterCommandsToGuildAsync(guild.Id);
+            }
         }
 
         public async Task StartAsync()

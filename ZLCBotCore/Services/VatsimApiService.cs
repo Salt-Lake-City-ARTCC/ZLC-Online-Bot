@@ -317,7 +317,7 @@ namespace ZLCBotCore.Services
 
                 if (_message == null) return null;
 
-                if (_message.Author.IsBot && _message.Author.Id == 923302257603252324)
+                if (_message.Author.IsBot && (_message.Author.Id == 923302257603252324 || _message.Author.Id == 1013213129485852672))
                 {
                     botMessageCount++;
                     if (botMessageCount == 1) result = _message;
