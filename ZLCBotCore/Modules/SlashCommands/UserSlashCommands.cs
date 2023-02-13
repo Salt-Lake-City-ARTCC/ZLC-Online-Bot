@@ -1,4 +1,5 @@
-﻿using Discord.Interactions;
+﻿using Discord;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,10 +34,24 @@ namespace ZLCBotCore.Modules.SlashCommands
         /// Slash Command for Giving Roles/Permissions to the user performing the command.
         /// </summary>
         /// <returns>None</returns>
-        [SlashCommand("give-role", "Get discord roles/permissions. Your Discord account must be linked on the VATUSA website.")]
+        [SlashCommand("give-roles", "Get discord roles/permissions. Your Discord account must be linked on the VATUSA website.")]
         public async Task AssignRoles()
         {
             //await DeferAsync(ephemeral: true); // ephemeral means that only the person doing the command will see the message/response.
+
+            if (Context.Channel.Name != "role-assignment")
+            {
+                await DeferAsync(ephemeral: true);
+                _logger.LogDebug($"give-roles: {Context.User.Username} tried to run the command in {Context.Channel.Name}. This command is only accepted in channels named 'role-assignment'");
+                EmbedBuilder wrongChannelBuilder = new EmbedBuilder()
+                {
+                    Title = "Wrong Discord Channel Error",
+                    Description = "Please use the role-assignment channel to give yourself roles.",
+                    Color= Color.Red
+                };
+                await FollowupAsync(embed: wrongChannelBuilder.Build());
+            }
+            
             await DeferAsync();
             var embed = await _services.GetRequiredService<RoleAssignmentService>().GiveRole((SocketGuildUser)Context.User);
             await FollowupAsync(embed: embed.Build());
