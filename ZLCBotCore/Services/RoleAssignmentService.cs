@@ -81,7 +81,7 @@ namespace ZLCBotCore.Services
                     if (role == null) continue;
 
                     await User.AddRoleAsync(role);
-                    _logger.LogInformation($"Give Role: {User.Username} ({User.Id}) in {User.Guild.Name} -> Found user in VATUSA, user also is ZLC Neighbor; Assigned {role?.Name} role to user.");
+                    _logger.LogInformation($"Give Role: {User.Username} ({User.Id}) in {User.Guild.Name} -> Found user in VATUSA; Assigned {role?.Name} role to user.");
                     embed.Description += role?.Mention + " ";
                 }
             }
