@@ -101,9 +101,10 @@ namespace ZLCBotCore.Services
             {
                 if (HasArtccStaffRole(userModel)) output.Add("Staff");
                 if (IsZLCSpecialist(userModel)) output.Add("ZLC Specialist");
-                if (IsZLCVisitor(userModel)) output.Add("ZLC Visitor");
                 if (IsZLCObserver(userModel)) output.Add("Observer");
             }
+
+            if (IsZLCVisitor(userModel)) output.Add("ZLC Visitor");
 
             if (IsZLCNeighbor(userModel)) output.Add("ZLC Neighbor");
 
