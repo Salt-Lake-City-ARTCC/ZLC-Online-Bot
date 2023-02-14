@@ -63,7 +63,7 @@ namespace ZLCBotCore.Services
         {
             List<SocketGuild>? currentGuilds = _discord.Guilds.ToList();
 
-            // await _interactionService.RegisterCommandsGloballyAsync();
+            await _interactionService.RegisterCommandsGloballyAsync();
             // For development only! For production use await _interactionService.RegisterCommandsGloballyAsync(); instead of foreach loop.
             foreach (var guild in currentGuilds)
             {
