@@ -23,6 +23,7 @@
 */
 using Discord;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,20 +57,26 @@ namespace ZLCBotCore
 
             DiscordSocketConfig discordConfig = new DiscordSocketConfig()
             {
-                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
+                GatewayIntents = GatewayIntents.GuildMembers | GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
             };
 
+            DiscordSocketClient discordClient = new(discordConfig);
+
             // configure the services 
-            var services = new ServiceCollection().AddSingleton(new DiscordSocketClient(discordConfig))
+            var services = new ServiceCollection().AddSingleton(discordClient)
                                                   .AddSingleton(_config)
-                                                  .AddSingleton(new CommandService(new CommandServiceConfig { DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug, CaseSensitiveCommands = false, ThrowOnError = false }))
+                                                  .AddSingleton(new CommandService(new CommandServiceConfig { DefaultRunMode = Discord.Commands.RunMode.Async, LogLevel = LogSeverity.Debug, CaseSensitiveCommands = false, ThrowOnError = false }))
                                                   .AddSingleton<StartupService>()
                                                   .AddSingleton<LoggingService>()
                                                   .AddSingleton<CommandHandler>()
+                                                  .AddSingleton(new InteractionService(discordClient, new InteractionServiceConfig { LogLevel = LogSeverity.Debug }))
+                                                  .AddSingleton<InteractionHandler>()
                                                   .AddSingleton<DescriptionLists>()
                                                   .AddSingleton<VatsimApiService>()
                                                   .AddSingleton<ControllerLists>()
-                                                  .AddSingleton<DescriptionLists>();
+                                                  .AddSingleton<DescriptionLists>()
+                                                  .AddSingleton<RoleAssignmentService>()
+                                                  .AddSingleton<VatusaApi>();
 
 
 
@@ -80,15 +87,20 @@ namespace ZLCBotCore
             // build the services
             var serviceProvider = services.BuildServiceProvider();
 
+
+
             // Instantiate the Logger
             serviceProvider.GetRequiredService<LoggingService>();
             serviceProvider.GetRequiredService<ILogger<ZLCBot>>().LogInformation("LICENSE: ZLC - Online - Bot  Copyright(C) 2022  Nikolas Boling(Nikolai558)\n\nLICENSE: This program comes with ABSOLUTELY NO WARRANTY.\nLICENSE: This is free software, and you are welcome to redistribute it\nLICENSE: under certain conditions.");
 
+            // Load Services and Initialize required services/modules
+            serviceProvider.GetRequiredService<CommandHandler>();
+            serviceProvider.GetRequiredService<InteractionHandler>();
+            serviceProvider.GetRequiredService<RoleAssignmentService>();
+            await serviceProvider.GetRequiredService<InteractionHandler>().InitializeAsync();
+
             // Start the bot
             await serviceProvider.GetRequiredService<StartupService>().StartAsync();
-
-            // Load Services
-            serviceProvider.GetRequiredService<CommandHandler>();
 
             // Block program till its closed.
             await Task.Delay(-1);
