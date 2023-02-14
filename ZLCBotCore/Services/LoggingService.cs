@@ -23,6 +23,7 @@
 */
 using Discord;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using System;
@@ -37,15 +38,18 @@ namespace ZLCBotCore.Services
         private readonly ILogger _logger;
         private readonly DiscordSocketClient _discord;
         private readonly CommandService _commands;
+        private readonly InteractionService _interactionCommands;
 
-        public LoggingService(ILogger<LoggingService> logger, DiscordSocketClient discord, CommandService commands)
+        public LoggingService(ILogger<LoggingService> logger, DiscordSocketClient discord, CommandService commands, InteractionService interactionCommands)
         {
             _discord = discord;
             _logger = logger;
             _commands = commands;
+            _interactionCommands = interactionCommands;
 
             _discord.Log += OnLogAsync;
             _commands.Log += OnLogAsync;
+            _interactionCommands.Log += OnLogAsync;
 
             _logger.LogInformation("Loaded: LoggingService");
         }
