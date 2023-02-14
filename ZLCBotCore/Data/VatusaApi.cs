@@ -35,6 +35,10 @@ namespace ZLCBotCore.Data
             {
                 return null;
             }
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
     }
 }
