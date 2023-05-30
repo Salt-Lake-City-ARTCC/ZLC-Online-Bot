@@ -43,7 +43,7 @@ namespace ZLCBotCore.Modules.SlashCommands
             string error = "";
             string message = "";
 
-            var guildUsers =  Context.Guild.GetUsersAsync().Flatten();
+            var guildUsers = Context.Guild.GetUsersAsync().Flatten();
             await foreach (var user in guildUsers)
             {
                 error = "";
@@ -54,13 +54,13 @@ namespace ZLCBotCore.Modules.SlashCommands
                 }
 
                 SocketGuildUser guildUser = Context.Guild.GetUser(user.Id);
-                if (guildUser == null) 
+                if (guildUser == null)
                 {
                     error = "Unknown Error Occured ";
                     message = "FAILED: " + message + error;
                     changedNicknames.Add(message);
                     _logger.LogWarning(message);
-                    continue; 
+                    continue;
                 }
 
                 string oldNikname = user.Nickname ?? "None";

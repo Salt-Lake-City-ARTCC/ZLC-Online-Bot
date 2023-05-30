@@ -47,7 +47,7 @@ namespace ZLCBotCore.Modules.SlashCommands
                 {
                     Title = "Wrong Discord Channel Error",
                     Description = "Please use the role-assignment channel to give yourself roles.",
-                    Color= Color.Red
+                    Color = Color.Red
                 };
                 await FollowupAsync(embed: wrongChannelBuilder.Build());
             }
