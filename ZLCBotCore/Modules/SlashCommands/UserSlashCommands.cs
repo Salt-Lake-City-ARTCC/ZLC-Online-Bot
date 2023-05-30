@@ -47,11 +47,11 @@ namespace ZLCBotCore.Modules.SlashCommands
                 {
                     Title = "Wrong Discord Channel Error",
                     Description = "Please use the role-assignment channel to give yourself roles.",
-                    Color= Color.Red
+                    Color = Color.Red
                 };
                 await FollowupAsync(embed: wrongChannelBuilder.Build());
             }
-            
+
             await DeferAsync();
             var embed = await _services.GetRequiredService<RoleAssignmentService>().GiveRole((SocketGuildUser)Context.User);
             await FollowupAsync(embed: embed.Build());
