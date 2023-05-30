@@ -51,7 +51,7 @@ namespace ZLCBotCore.Modules.SlashCommands
                 };
                 await FollowupAsync(embed: wrongChannelBuilder.Build());
             }
-            
+
             await DeferAsync();
             var embed = await _services.GetRequiredService<RoleAssignmentService>().GiveRole((SocketGuildUser)Context.User);
             await FollowupAsync(embed: embed.Build());
