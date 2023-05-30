@@ -101,6 +101,11 @@ namespace ZLCBotCore.Modules.SlashCommands
 
             string msg = string.Join("\n", changedNicknames);
 
+            if (msg.Length > 4000)
+            {
+                msg = "Could not send message due to the length limitation on Discord. If you need a log of the nicknames changed please contact the bot developer (Nikolas).";
+            }
+
             await FollowupAsync(msg);
         }
     }
