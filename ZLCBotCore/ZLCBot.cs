@@ -57,7 +57,8 @@ namespace ZLCBotCore
 
             DiscordSocketConfig discordConfig = new DiscordSocketConfig()
             {
-                GatewayIntents = GatewayIntents.GuildMembers | GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds
+                GatewayIntents = GatewayIntents.GuildMembers | GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.Guilds,
+                AlwaysDownloadUsers = true
             };
 
             DiscordSocketClient discordClient = new(discordConfig);
