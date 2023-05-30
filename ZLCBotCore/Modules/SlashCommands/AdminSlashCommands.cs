@@ -66,6 +66,14 @@ namespace ZLCBotCore.Modules.SlashCommands
                 string oldNikname = user.Nickname ?? "None";
                 string newNickname = await _roleService.CreateNickname(guildUser);
 
+                if (oldNikname == newNickname)
+                {
+                    error = "New Nickname and Old Nickname is the same ";
+                    message = "NO CHANGE: " + message + error;
+                    _logger.LogDebug(message);
+                    continue;
+                }
+
                 if (newNickname == string.Empty)
                 {
                     error = "Discord Account Not Connected To VATSIM ";
@@ -80,7 +88,7 @@ namespace ZLCBotCore.Modules.SlashCommands
                     await guildUser.ModifyAsync(u => u.Nickname = newNickname);
                     message = "SUCCESS: " + message + $"{oldNikname} -> {newNickname} ";
                     changedNicknames.Add(message);
-                    _logger.LogDebug(message);
+                    _logger.LogInformation(message);
                 }
                 catch (Exception ex)
                 {
