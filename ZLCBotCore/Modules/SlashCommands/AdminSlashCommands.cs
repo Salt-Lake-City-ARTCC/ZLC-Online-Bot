@@ -103,6 +103,9 @@ namespace ZLCBotCore.Modules.SlashCommands
 
             if (msg.Length > 4000)
             {
+                _logger.LogWarning("Refresh-Nicknames: Message Response was to large to send to Discord.");
+                _logger.LogInformation($"Refresh-nickname: Changed nickname Log:\n\n{msg}");
+
                 msg = "Could not send message due to the length limitation on Discord. If you need a log of the nicknames changed please contact the bot developer (Nikolas).";
             }
 
