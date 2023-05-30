@@ -63,13 +63,13 @@ namespace ZLCBotCore.Services
         {
             List<SocketGuild>? currentGuilds = _discord.Guilds.ToList();
 
-            // await _interactionService.RegisterCommandsGloballyAsync(deleteMissing:true);
+            await _interactionService.RegisterCommandsGloballyAsync(deleteMissing: true);
             // For development only! For production use await _interactionService.RegisterCommandsGloballyAsync(); instead of foreach loop.
-            foreach (var guild in currentGuilds)
-            {
-                // Register any slash commands to the individual discord server
-                await _interactionService.RegisterCommandsToGuildAsync(guild.Id, deleteMissing: true);
-            }
+            //foreach (var guild in currentGuilds)
+            //{
+            //    // Register any slash commands to the individual discord server
+            //    await _interactionService.RegisterCommandsToGuildAsync(guild.Id, deleteMissing: true);
+            //}
         }
 
         public async Task StartAsync()
