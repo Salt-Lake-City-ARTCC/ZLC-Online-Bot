@@ -164,12 +164,7 @@ namespace ZLCBotCore.Services
         /// <returns>A string for what the user's nickname was changed to.</returns>
         private async Task<string> ChangeNickname(SocketGuildUser User, VatusaUserData? UserData)
         {
-            string newNickname = $"{UserData?.data?.fname} {UserData?.data?.lname} | {UserData?.data?.rating_short?.ToUpper()} | {UserData?.data?.facility}";
-
-            if (User.Nickname != null && User.Nickname.Contains('|'))
-            {
-                newNickname = User.Nickname[..User.Nickname.IndexOf("|")] + newNickname[newNickname.IndexOf("|")..];
-            }
+            string newNickname = CreateNickname(User, UserData);
 
             try
             {
@@ -186,6 +181,40 @@ namespace ZLCBotCore.Services
                 }
                 throw;
             }
+        }
+
+        public async Task<string> CreateNickname(SocketGuildUser User)
+        {
+            VatusaUserData? UserData = await VatusaApi.GetVatusaUserInfo(User.Id);
+
+            if (UserData == null)
+            {
+                return string.Empty;
+            }
+
+            string nickname = $"{UserData?.data?.fname} {UserData?.data?.lname} | {UserData?.data?.rating_short?.ToUpper()} | {UserData?.data?.facility}";
+
+            if (User.Nickname != null && User.Nickname.Contains('|'))
+            {
+                nickname = User.Nickname[..User.Nickname.IndexOf("|")] + nickname[nickname.IndexOf("|")..];
+            }
+            return nickname;
+        }
+
+        private static string CreateNickname(SocketGuildUser User, VatusaUserData? UserData)
+        {
+            if (UserData == null)
+            {
+                return string.Empty;
+            }
+
+            string nickname = $"{UserData?.data?.fname} {UserData?.data?.lname} | {UserData?.data?.rating_short?.ToUpper()} | {UserData?.data?.facility}";
+
+            if (User.Nickname != null && User.Nickname.Contains('|'))
+            {
+                nickname = User.Nickname[..User.Nickname.IndexOf("|")] + nickname[nickname.IndexOf("|")..];
+            }
+            return nickname;
         }
 
         /// <summary>

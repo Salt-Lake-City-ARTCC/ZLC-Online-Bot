@@ -37,28 +37,63 @@ namespace ZLCBotCore.Modules.SlashCommands
         [SlashCommand("refresh-nicknames", "Staff Command - Refresh the Nicknames of all guild members.")]
         public async Task RefreshNickNames()
         {
-            _logger.LogWarning("TEST - Refresh command Called.");
-            await DeferAsync(ephemeral: true);
+            await DeferAsync();
 
+            List<string> changedNicknames = new List<string>();
+            string error = "";
+            string message = "";
 
             var guildUsers =  Context.Guild.GetUsersAsync().Flatten();
-            await foreach (RestGuildUser user in guildUsers)
+            await foreach (var user in guildUsers)
             {
+                error = "";
+                message = $"{user.Username} ";
+                if (user.IsBot)
+                {
+                    continue;
+                }
 
                 SocketGuildUser guildUser = Context.Guild.GetUser(user.Id);
-                string oldNikname = user.Nickname ?? "None";
-
-
-                var embed = await _roleService.GiveRole(guildUser, false);
-                string newNikname = guildUser.Nickname ?? "None";
-                if (!user.IsBot)
+                if (guildUser == null) 
                 {
-                    _logger.LogWarning($"User : {user.Nickname ?? user.Username}");
+                    error = "Unknown Error Occured ";
+                    message = "FAILED: " + message + error;
+                    changedNicknames.Add(message);
+                    _logger.LogWarning(message);
+                    continue; 
                 }
-                await FollowupAsync(embed: embed.Build());
 
+                string oldNikname = user.Nickname ?? "None";
+                string newNickname = await _roleService.CreateNickname(guildUser);
+
+                if (newNickname == string.Empty)
+                {
+                    error = "Discord Account Not Connected To VATSIM ";
+                    message = "FAILED: " + message + error;
+                    changedNicknames.Add(message);
+                    _logger.LogWarning(message);
+                    continue;
+                }
+
+                try
+                {
+                    await guildUser.ModifyAsync(u => u.Nickname = newNickname);
+                    message = "SUCCESS: " + message + $"{oldNikname} -> {newNickname} ";
+                    changedNicknames.Add(message);
+                    _logger.LogDebug(message);
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                    message = "FAILED: " + message + error;
+                    changedNicknames.Add(message);
+                    _logger.LogWarning(message);
+                }
             }
-        }
 
+            string msg = string.Join("\n", changedNicknames);
+
+            await FollowupAsync(msg);
+        }
     }
 }
