@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   zlcdiscordbot:
-    image: zlcbotcore:1.0.4
+    image: zlcbotcore:1.0.5
     container_name: zlconlinebot
     restart: unless-stopped
     build:

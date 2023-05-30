@@ -66,6 +66,14 @@ namespace ZLCBotCore.Modules.SlashCommands
                 string oldNikname = user.Nickname ?? "None";
                 string newNickname = await _roleService.CreateNickname(guildUser);
 
+                if (oldNikname == newNickname)
+                {
+                    error = "New Nickname and Old Nickname is the same ";
+                    message = "NO CHANGE: " + message + error;
+                    _logger.LogDebug(message);
+                    continue;
+                }
+
                 if (newNickname == string.Empty)
                 {
                     error = "Discord Account Not Connected To VATSIM ";
@@ -80,7 +88,7 @@ namespace ZLCBotCore.Modules.SlashCommands
                     await guildUser.ModifyAsync(u => u.Nickname = newNickname);
                     message = "SUCCESS: " + message + $"{oldNikname} -> {newNickname} ";
                     changedNicknames.Add(message);
-                    _logger.LogDebug(message);
+                    _logger.LogInformation(message);
                 }
                 catch (Exception ex)
                 {
@@ -92,6 +100,14 @@ namespace ZLCBotCore.Modules.SlashCommands
             }
 
             string msg = string.Join("\n", changedNicknames);
+
+            if (msg.Length > 4000)
+            {
+                _logger.LogWarning("Refresh-Nicknames: Message Response was to large to send to Discord.");
+                _logger.LogInformation($"Refresh-nickname: Changed nickname Log:\n\n{msg}");
+
+                msg = "Could not send message due to the length limitation on Discord. If you need a log of the nicknames changed please contact the bot developer (Nikolas).";
+            }
 
             await FollowupAsync(msg);
         }
